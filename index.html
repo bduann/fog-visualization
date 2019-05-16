@@ -9,19 +9,54 @@
   <style>
     body { margin:0; padding:0; }
     #map { position:absolute; top:0; bottom:0; width:100%; }
+    #marker-1 {
+        background-image: url('./images/marker.png');
+        background-size: cover;
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        cursor: pointer;
+        }
   </style>
 </head>
 <body>
 
 <div id='map'></div>
 <script>
+var fogLocation1 = [-120.410000,34.553056]
 mapboxgl.accessToken = 'pk.eyJ1IjoiYmR1YW5uIiwiYSI6ImNqdnEwcXRnYTAyZWk0M3J4Z2ZsdTB3NDgifQ.ZagXnMQZ3gR1DRVpaF5kyA';
 const map = new mapboxgl.Map({
   container: 'map',
   style: 'mapbox://styles/bduann/cjvq112381tku1ctdah4jge9i',
   center: [-121.516228, 36.515869],
-  zoom: 8
+  zoom: 6
 });
+
+var popup = new mapboxgl.Popup({ offset: 25 })
+    .setText('fog Location 1')
+var el = document.createElement('div');
+el.id = 'marker-1'; 
+new mapboxgl.Marker(el)
+    .setLngLat(fogLocation1)
+    .setPopup(popup) // sets a popup on this marker
+    .addTo(map);
+    map.on('load', function () {
+        map.addSource('dem', {
+        "type": "raster-dem",   
+        "url": "mapbox://mapbox.terrain-rgb"
+        });
+        map.addLayer({
+        "id": "hillshading",
+        "source": "dem",
+        "type": "hillshade"
+        // insert below waterway-river-canal-shadow;
+        // where hillshading sits in the Mapbox Outdoors style
+        }, 'waterway-river-canal-shadow');
+        });
+
+        var myLayer = L.mapbox.featureLayer().setGeoJSON(geojson).addTo(mapGeo);
+mapGeo.scrollWheelZoom.disable();
+
 </script>
 
 </body>
